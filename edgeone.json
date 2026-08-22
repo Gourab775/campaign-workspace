@@ -1,0 +1,13 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "agents": {
+    "framework": "crewai",
+    "dir": "agents"
+  },
+  "cloudFunctions": {
+    "nodejs": {
+      "includeFiles": []
+    }
+  }
+}

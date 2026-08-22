@@ -1,0 +1,25 @@
+channel_strategy_task:
+  description: >
+    Design the channel strategy for this marketing campaign.
+
+    Campaign: {campaign_name}
+    Brief: {campaign_brief}
+    Audience Profile: {audience_profile}
+    Market Insights: {market_insights}
+
+    Provide:
+    1. Channel Mix - which channels to use and why
+    2. Channel Roles - what each channel is responsible for (awareness, consideration, conversion, retention)
+    3. Timeline - campaign phases and timing (preparation, launch, sustain, wrap-up)
+    4. Budget Allocation - percentage split across channels with brief rationale
+
+    Be specific and actionable. Use tables where helpful.
+    IMPORTANT formatting rules:
+    - In Markdown tables, each row MUST be on a single line. Do NOT put line breaks inside table cells.
+    - Keep table cell content concise. If content is long, use short summaries in the table and add details below the table.
+    - Do NOT use <br> or HTML tags. Use plain Markdown only.
+    Language: Respond in {locale_instruction}.
+  expected_output: >
+    A structured channel strategy in pure Markdown format (no HTML tags).
+    Tables must have each row on a single line with no line breaks inside cells.
+  agent: channel_planner
