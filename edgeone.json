@@ -2,8 +2,12 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "agents": {
-    "framework": "crewai",
-    "dir": "agents"
+    "framework": "workflow",
+    "dir": "services"
+  },
+  "services": {
+    "framework": "workflow",
+    "dir": "services"
   },
   "cloudFunctions": {
     "nodejs": {
