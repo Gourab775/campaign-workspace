@@ -1,5 +1,6 @@
 {
-  "name": "crewai-marketing-campaign",
+  "name": "marketing-campaign",
+  "description": "Enterprise marketing campaign planning workspace with phased workflow orchestration and interactive strategy delivery",
   "private": true,
   "version": "0.1.0",
   "type": "module",
