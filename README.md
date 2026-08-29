@@ -1,24 +1,24 @@
-# Marketing Campaign Planner
+﻿# Marketing Campaign Planner
 
-Live Demo: https://gourab775.github.io/marketing-campaign
+Live Demo: https://marketing-campaign-steel.vercel.app
 
 Category: Marketing & Strategy Automation Platform
 
-Stack: React 19 · TypeScript · Python 3.11 · Workflow Engine · Vite · Tailwind CSS
+Stack: React 19 Â· TypeScript Â· Python 3.11 Â· Workflow Engine Â· Vite Â· Tailwind CSS
 
 ## Overview
 
-Marketing Campaign Planner is an enterprise-grade, full-stack workspace for end-to-end campaign planning through a guided, phased workflow. The platform orchestrates five sequential stages — discovery, planning (brand + channel in parallel), integration, content generation, and finalization — using specialized workflow modules that collaborate to produce brand creatives, channel strategies, and unified campaign plans. Human-in-the-loop review is embedded at every phase, allowing stakeholders to approve, regenerate, or rollback outputs before advancing.
+Marketing Campaign Planner is an enterprise-grade, full-stack workspace for end-to-end campaign planning through a guided, phased workflow. The platform orchestrates five sequential stages â€” discovery, planning (brand + channel in parallel), integration, content generation, and finalization â€” using specialized workflow modules that collaborate to produce brand creatives, channel strategies, and unified campaign plans. Human-in-the-loop review is embedded at every phase, allowing stakeholders to approve, regenerate, or rollback outputs before advancing.
 
 The system combines a React frontend with real-time SSE streaming, session-persistent state, and Python-based service orchestration to deliver a resilient, production-ready planning environment.
 
 ## Features
 
-- **5-Phase Orchestrated Workflow** — Discovery, brand/channel planning (parallel), integration, content synthesis, and finalization with structured state routing and phase-gate approvals.
-- **Human-in-the-Loop Controls** — Approve, regenerate, and rollback actions at every stage with comparison views for iterative refinement without restarting the workflow.
-- **Real-Time Streaming Experience** — Server-sent events (SSE) stream service reasoning and structured card outputs to the UI with live phase progress tracking.
-- **Session Persistence & Sticky Routing** — Conversation state survives instance restarts via store-backed recovery and conversation-scoped sticky routing.
-- **Modular Service Architecture** — Specialized services for market analysis, brand & creative, channel planning, integration strategy, and content production, each with isolated responsibilities.
+- **5-Phase Orchestrated Workflow** â€” Discovery, brand/channel planning (parallel), integration, content synthesis, and finalization with structured state routing and phase-gate approvals.
+- **Human-in-the-Loop Controls** â€” Approve, regenerate, and rollback actions at every stage with comparison views for iterative refinement without restarting the workflow.
+- **Real-Time Streaming Experience** â€” Server-sent events (SSE) stream service reasoning and structured card outputs to the UI with live phase progress tracking.
+- **Session Persistence & Sticky Routing** â€” Conversation state survives instance restarts via store-backed recovery and conversation-scoped sticky routing.
+- **Modular Service Architecture** â€” Specialized services for market analysis, brand & creative, channel planning, integration strategy, and content production, each with isolated responsibilities.
 
 ## Tech Stack
 
@@ -35,47 +35,47 @@ The system combines a React frontend with real-time SSE streaming, session-persi
 
 ```
 marketing-campaign/
-├── services/                         # Service orchestration (Python) — formerly agents/
-│   ├── stream.py                     # POST /stream — main SSE entry point
-│   ├── _lib/
-│   │   ├── flow.py                   # MarketingCampaignFlow (5-step orchestration)
-│   │   ├── persistence.py            # FlowPersistence + store synchronization
-│   │   ├── feedback_provider.py      # Human feedback provider bridge
-│   │   ├── llm.py                    # Platform Services initialization helper
-│   │   └── logger.py                # Structured logger
-│   └── _crews/
-│       ├── discovery_crew/           # Market analysis — audience & insights
-│       ├── brand_creative_crew/      # Brand strategy — visual & messaging identity
-│       ├── channel_planning_crew/    # Channel planning — media mix & budget
-│       ├── integration_crew/         # Integration — unified campaign plan
-│       └── content_crew/             # Content production — final deliverables
-├── cloud-functions/                  # Auxiliary HTTP endpoints (Python)
-│   ├── history.py                    # POST /history — load conversation history
-│   ├── delete.py                     # POST /delete — delete a conversation
-│   └── requirements.txt
-├── src/                              # React + TypeScript frontend
-│   ├── App.tsx                       # Application shell & state management
-│   ├── components/
-│   │   ├── cards/                    # Structured output cards
-│   │   ├── views/                    # Phase-specific views
-│   │   ├── Header.tsx
-│   │   ├── PhaseProgress.tsx        # 5-phase progress indicator
-│   │   ├── InputBar.tsx
-│   │   ├── StartPanel.tsx
-│   │   └── HistoryPanel.tsx
-│   ├── hooks/
-│   │   ├── useSSE.ts
-│   │   └── useHistory.ts
-│   ├── i18n.ts
-│   ├── types/index.ts
-│   └── utils/export.ts               # Markdown export
-├── edgeone.json                      # Deployment configuration (framework: workflow)
-├── package.json
-├── requirements.txt
-└── vite.config.ts
+â”œâ”€â”€ services/                         # Service orchestration (Python) â€” formerly agents/
+â”‚   â”œâ”€â”€ stream.py                     # POST /stream â€” main SSE entry point
+â”‚   â”œâ”€â”€ _lib/
+â”‚   â”‚   â”œâ”€â”€ flow.py                   # MarketingCampaignFlow (5-step orchestration)
+â”‚   â”‚   â”œâ”€â”€ persistence.py            # FlowPersistence + store synchronization
+â”‚   â”‚   â”œâ”€â”€ feedback_provider.py      # Human feedback provider bridge
+â”‚   â”‚   â”œâ”€â”€ llm.py                    # Platform Services initialization helper
+â”‚   â”‚   â””â”€â”€ logger.py                # Structured logger
+â”‚   â””â”€â”€ _crews/
+â”‚       â”œâ”€â”€ discovery_crew/           # Market analysis â€” audience & insights
+â”‚       â”œâ”€â”€ brand_creative_crew/      # Brand strategy â€” visual & messaging identity
+â”‚       â”œâ”€â”€ channel_planning_crew/    # Channel planning â€” media mix & budget
+â”‚       â”œâ”€â”€ integration_crew/         # Integration â€” unified campaign plan
+â”‚       â””â”€â”€ content_crew/             # Content production â€” final deliverables
+â”œâ”€â”€ cloud-functions/                  # Auxiliary HTTP endpoints (Python)
+â”‚   â”œâ”€â”€ history.py                    # POST /history â€” load conversation history
+â”‚   â”œâ”€â”€ delete.py                     # POST /delete â€” delete a conversation
+â”‚   â””â”€â”€ requirements.txt
+â”œâ”€â”€ src/                              # React + TypeScript frontend
+â”‚   â”œâ”€â”€ App.tsx                       # Application shell & state management
+â”‚   â”œâ”€â”€ components/
+â”‚   â”‚   â”œâ”€â”€ cards/                    # Structured output cards
+â”‚   â”‚   â”œâ”€â”€ views/                    # Phase-specific views
+â”‚   â”‚   â”œâ”€â”€ Header.tsx
+â”‚   â”‚   â”œâ”€â”€ PhaseProgress.tsx        # 5-phase progress indicator
+â”‚   â”‚   â”œâ”€â”€ InputBar.tsx
+â”‚   â”‚   â”œâ”€â”€ StartPanel.tsx
+â”‚   â”‚   â””â”€â”€ HistoryPanel.tsx
+â”‚   â”œâ”€â”€ hooks/
+â”‚   â”‚   â”œâ”€â”€ useSSE.ts
+â”‚   â”‚   â””â”€â”€ useHistory.ts
+â”‚   â”œâ”€â”€ i18n.ts
+â”‚   â”œâ”€â”€ types/index.ts
+â”‚   â””â”€â”€ utils/export.ts               # Markdown export
+â”œâ”€â”€ edgeone.json                      # Deployment configuration (framework: workflow)
+â”œâ”€â”€ package.json
+â”œâ”€â”€ requirements.txt
+â””â”€â”€ vite.config.ts
 ```
 
-> Environment variables follow the `SERVICE_*` convention — `SERVICE_* (alias for AI_GATEWAY_* for backward compat)` where applicable.
+> Environment variables follow the `SERVICE_*` convention â€” `SERVICE_* (alias for AI_GATEWAY_* for backward compat)` where applicable.
 
 ## Getting Started
 
@@ -123,7 +123,7 @@ Outputs production assets to `dist/`.
 
 ### EdgeOne Makers
 
-`edgeone.json` is preconfigured with `framework: workflow` and `dir: services`. Connect the repository to EdgeOne Makers — build command `npm run build`, output directory `dist`, services directory `services`. Sticky routing is handled automatically for conversation persistence.
+`edgeone.json` is preconfigured with `framework: workflow` and `dir: services`. Connect the repository to EdgeOne Makers â€” build command `npm run build`, output directory `dist`, services directory `services`. Sticky routing is handled automatically for conversation persistence.
 
 ### GitHub Pages (Frontend Preview)
 
@@ -134,7 +134,7 @@ npm run build
 # Deploy dist/ to gh-pages branch or configure Pages source
 ```
 
-Live demo served at `https://gourab775.github.io/marketing-campaign`.
+Live demo served at `https://marketing-campaign-steel.vercel.app`.
 
 ### Custom Hosting
 
@@ -142,11 +142,11 @@ Deploy `dist/` to any static host (Vercel, Netlify, Cloudflare Pages) and host `
 
 ## Customization
 
-- **Workflow Phases** — Edit `services/_lib/flow.py` to adjust phase sequence, routing decorators (`@start`, `@listen`, `@router`), and feedback gates.
-- **Service Crews** — Update definitions under `services/_crews/` (discovery, brand_creative, channel_planning, integration, content) to tailor roles and outputs.
-- **UI Cards & Views** — Modify `src/components/cards/` and `src/components/views/` to change card layouts or add new phase visualizations.
-- **Theming & i18n** — Adjust Tailwind config and `src/i18n.ts` for brand palette and language support.
-- **Export & Persistence** — Extend `src/utils/export.ts` and `services/_lib/persistence.py` for custom formats or external storage.
+- **Workflow Phases** â€” Edit `services/_lib/flow.py` to adjust phase sequence, routing decorators (`@start`, `@listen`, `@router`), and feedback gates.
+- **Service Crews** â€” Update definitions under `services/_crews/` (discovery, brand_creative, channel_planning, integration, content) to tailor roles and outputs.
+- **UI Cards & Views** â€” Modify `src/components/cards/` and `src/components/views/` to change card layouts or add new phase visualizations.
+- **Theming & i18n** â€” Adjust Tailwind config and `src/i18n.ts` for brand palette and language support.
+- **Export & Persistence** â€” Extend `src/utils/export.ts` and `services/_lib/persistence.py` for custom formats or external storage.
 
 ## License
 
