@@ -1,6 +1,6 @@
 ﻿# Marketing Campaign Planner
 
-Live Demo: https://marketing-campaign-steel.vercel.app
+Live Demo: https://campaign-workspace.vercel.app
 
 Category: Marketing & Strategy Automation Platform
 
@@ -134,7 +134,7 @@ npm run build
 # Deploy dist/ to gh-pages branch or configure Pages source
 ```
 
-Live demo served at `https://marketing-campaign-steel.vercel.app`.
+Live demo served at `https://campaign-workspace.vercel.app`.
 
 ### Custom Hosting
 
