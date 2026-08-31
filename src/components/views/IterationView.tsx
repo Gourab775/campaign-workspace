@@ -125,7 +125,7 @@ export default function IterationView({ cards, streaming, activeAgents, onFinish
                     )}
                   </div>
 
-                  {/* 内嵌修改输入框 */}
+                  {/* inline edit input */}
                   {onIterationFeedback && !loading && (
                     <div className="mt-4 pt-3 border-t border-[var(--color-border)] flex gap-2">
                       <input

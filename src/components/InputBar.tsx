@@ -11,7 +11,7 @@ interface InputBarProps {
 export default function InputBar({ onSend, disabled, placeholder, prefill }: InputBarProps) {
   const [value, setValue] = useState("")
 
-  // 当 prefill 变化时填入
+  // fill when prefill changes
   useEffect(() => {
     if (prefill) {
       setValue(prefill)

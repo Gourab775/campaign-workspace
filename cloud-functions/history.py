@@ -4,7 +4,7 @@ from http.server import BaseHTTPRequestHandler
 
 
 class handler(BaseHTTPRequestHandler):
-    """POST /history — 读取会话历史数据"""
+    """POST /history — Read session history data"""
 
     def do_POST(self):
         content_length = int(self.headers.get("Content-Length", 0))
@@ -21,10 +21,10 @@ class handler(BaseHTTPRequestHandler):
 
         store = self.context.agent.store
         try:
-            # 读取对话元信息（存储了 phase 和 cards）
+            # Read conversation metadata (stores phase and cards)
             meta = store.get_conversation(conversation_id=cid)
             if meta and meta.metadata:
-                # 读取消息历史
+                # Read message history
                 messages = store.get_messages(conversation_id=cid, limit=100, order="asc")
                 chat_history = []
                 for m in messages:
@@ -51,7 +51,7 @@ class handler(BaseHTTPRequestHandler):
         except Exception as e:
             print(f"[history] store error: {e}", file=sys.stderr, flush=True)
 
-        # store 中没有数据
+        # No data in store
         self._respond(200, {"conversation_id": cid, "chat_history": [], "current_phase": "start"})
 
     def _respond(self, status: int, body: dict):

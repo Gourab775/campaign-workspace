@@ -54,15 +54,8 @@ export default function Header({ locale, onLocaleChange }: HeaderProps) {
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          {locale === "zh" ? "一键部署" : "Deploy"}
+          Deploy
         </a>
-
-        <button
-          onClick={() => onLocaleChange(locale === "zh" ? "en" : "zh")}
-          className="btn btn-outline text-xs px-3 py-1.5 cursor-pointer"
-        >
-          {locale === "zh" ? "EN" : "中"}
-        </button>
       </div>
     </header>
   )

@@ -7,7 +7,7 @@ from agents._lib.llm import get_llm
 
 @CrewBase
 class IntegrationCrew:
-    """策略整合 Crew — 策略总监将品牌+渠道整合为统一方案。"""
+    """Strategy Integration Crew - chief strategist integrates brand+channel into unified plan."""
 
     agents: list[BaseAgent]
     tasks: list[Task]

@@ -24,7 +24,7 @@ export default function PhaseProgress({ phase, onNew, onHistory }: PhaseProgress
   return (
     <div className="px-6 py-3 bg-white border-b border-[var(--color-border)]">
       <div className="flex items-center">
-        {/* 阶段进度 */}
+        {/* phase progress */}
         <div className="flex items-center flex-1 max-w-2xl mx-auto">
           {PHASES.map((p, idx) => {
             const isActive = p.key === phase
@@ -69,7 +69,7 @@ export default function PhaseProgress({ phase, onNew, onHistory }: PhaseProgress
           })}
         </div>
 
-        {/* 新建 + 历史 */}
+        {/* new + history */}
         <div className="flex items-center gap-1 ml-4 flex-shrink-0">
           <button onClick={onNew} className="btn btn-ghost text-xs cursor-pointer px-2 py-1">
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

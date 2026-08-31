@@ -1,10 +1,10 @@
-"""POST /stream — 营销活动策划 Agent 主入口 (SSE streaming)
+"""POST /stream — Marketing Campaign Agent main entry (SSE streaming)
 
-架构：
-- 主流程（discovery → planning → integration → content → finalize）
-  由 MarketingCampaignFlow 管理，使用 @human_feedback 暂停/恢复
-- 分支操作（redo_brand / redo_channel / rollback 等）
-  由 handler 层拦截，直接调用 Crew，不进 Flow
+Architecture:
+- Main flow (discovery -> planning -> integration -> content -> finalize)
+  managed by MarketingCampaignFlow, using @human_feedback pause/resume
+- Branch operations (redo_brand / redo_channel / rollback etc)
+  intercepted by handler layer, calling Crew directly, not entering Flow
 """
 
 import asyncio
@@ -186,11 +186,11 @@ async def handler(context):
         or ""
     ).strip()
     campaign_name = body.get("campaign_name", "")
-    locale = body.get("locale", "zh")
+    locale = body.get("locale", "en")
     action = body.get("action", "send")
     phase_action = body.get("phase_action")  # e.g., {"type": "confirm"}
     card_action = body.get("card_action")    # e.g., {"target": "brand", "type": "redo", "feedback": "..."}
-    iteration_feedback = body.get("iteration_feedback", "")  # e.g., "预算改为200万"
+    iteration_feedback = body.get("iteration_feedback", "")  # e.g., "change budget to 2 million"
 
     # iteration_feedback → treat as revise_document action
     if iteration_feedback:
@@ -250,7 +250,7 @@ async def handler(context):
             return context.utils.stream_sse(_keep_old_gen())
             return context.utils.stream_sse(_keep_old_gen())
 
-    # Handle skip_discovery (frontend "信息够了，开始策划" button)
+    # Handle skip_discovery (frontend "Enough info, start planning" button)
     if body.get("skip_discovery"):
         user_message = user_message or "ACTION:confirm"
 
@@ -367,7 +367,7 @@ async def handler(context):
                     log(f"[ERROR] Session lost: got ACTION message but no pending state. cid={cid}")
                     yield context.utils.sse({
                         "type": "error",
-                        "message": "会话状态丢失，请新建会话重试。" if locale == "zh" else "Session expired. Please start a new conversation.",
+                        "message": "Session expired. Please start a new conversation.",
                     })
                     yield context.utils.sse({"type": "done", "status": "error"})
                     return
@@ -538,7 +538,7 @@ async def handler(context):
 async def _handle_branch_action(message, cid, persistence, locale, context):
     """Handle redo/rollback actions — direct crew calls, bypass Flow."""
     action, feedback = _parse_action(message)
-    locale_instruction = "Chinese (中文)" if locale == "zh" else "English"
+    locale_instruction = "English"
 
     # Load current state from persistence
     pending = persistence.load_pending_feedback(cid)
@@ -759,7 +759,6 @@ def _extract_suggestions(text: str) -> list[str]:
 
 def _get_actions(phase: str, state, locale: str) -> list[dict]:
     """Generate available actions for current phase."""
-    zh = locale == "zh"
     actions = []
 
     if phase == "discovery":
@@ -767,30 +766,30 @@ def _get_actions(phase: str, state, locale: str) -> list[dict]:
 
     elif phase == "planning":
         actions = [
-            {"id": "ACTION:confirm", "label": "确认方案，继续" if zh else "Confirm & Continue"},
-            {"id": "ACTION:redo_brand", "label": "重新生成品牌创意" if zh else "Redo Brand Creative"},
-            {"id": "ACTION:redo_channel", "label": "重新生成渠道策略" if zh else "Redo Channel Strategy"},
+            {"id": "ACTION:confirm", "label": "Confirm & Continue"},
+            {"id": "ACTION:redo_brand", "label": "Redo Brand Creative"},
+            {"id": "ACTION:redo_channel", "label": "Redo Channel Strategy"},
         ]
 
     elif phase == "integration":
         actions = [
-            {"id": "ACTION:confirm", "label": "确认，继续" if zh else "Confirm & Continue"},
-            {"id": "ACTION:rollback_to_planning", "label": "返回方案策划" if zh else "Back to Planning"},
+            {"id": "ACTION:confirm", "label": "Confirm & Continue"},
+            {"id": "ACTION:rollback_to_planning", "label": "Back to Planning"},
         ]
 
     elif phase == "content":
         actions = [
-            {"id": "ACTION:confirm", "label": "确认，完成" if zh else "Confirm & Finish"},
-            {"id": "ACTION:rollback_to_integration", "label": "返回策略整合" if zh else "Back to Integration"},
+            {"id": "ACTION:confirm", "label": "Confirm & Finish"},
+            {"id": "ACTION:rollback_to_integration", "label": "Back to Integration"},
         ]
 
     elif phase == "finalize":
         actions = [
-            {"id": "ACTION:generate_document", "label": "生成完整方案" if zh else "Generate Full Plan"},
+            {"id": "ACTION:generate_document", "label": "Generate Full Plan"},
         ]
         if state.integrated_strategy and len(state.integrated_strategy) > 500:
             actions.append(
-                {"id": "ACTION:revise_document", "label": "修改方案" if zh else "Revise Plan"}
+                {"id": "ACTION:revise_document", "label": "Revise Plan"}
             )
 
     return actions

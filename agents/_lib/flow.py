@@ -1,20 +1,20 @@
-"""MarketingCampaignFlow — 主流程 Flow (5 步)
+"""MarketingCampaignFlow — Main Process Flow (5 steps)
 
-生命周期:
-  kickoff → discovery_step (循环提问) → pause
-  resume  → after_discovery → continue_discovery / "planning"
-  ...     → discovery_step → pause → ...
-  resume  → after_discovery → "planning"
-          → planning_step (品牌+渠道) → pause
-  resume  → after_planning → "integration"
-          → integration_step → pause
-  resume  → after_integration → "content"
-          → content_step → pause
-  resume  → after_content → "finalize"
-          → finalize_step (Flow 结束)
+Lifecycle:
+  kickoff -> discovery_step (loop questioning) -> pause
+  resume  -> after_discovery -> continue_discovery / "planning"
+  ...     -> discovery_step -> pause -> ...
+  resume  -> after_discovery -> "planning"
+          -> planning_step (brand+channel) -> pause
+  resume  -> after_planning -> "integration"
+          -> integration_step -> pause
+  resume  -> after_integration -> "content"
+          -> content_step -> pause
+  resume  -> after_content -> "finalize"
+          -> finalize_step (Flow end)
 
-分支操作（redo_brand / rollback 等）不在 Flow 内处理，
-由 stream.py handler 层拦截后直接调用 Crew。
+Branch operations (redo_brand / rollback etc) are not handled inside Flow,
+but intercepted by stream.py handler layer which calls Crew directly.
 """
 
 from pydantic import BaseModel, ConfigDict
@@ -36,62 +36,62 @@ MAX_DISCOVERY_ROUNDS = 4
 
 
 class CampaignState(BaseModel):
-    """营销活动策划 Flow 的全局状态"""
+    """Global state for Marketing Campaign Flow"""
 
     model_config = ConfigDict(extra="allow")
 
-    # 基础信息
+    # Basic info
     id: str = ""  # conversation_id, set via kickoff(inputs={"id": cid})
     campaign_name: str = ""
     campaign_brief: str = ""
-    locale: str = "zh"
+    locale: str = "en"
 
-    # Discovery 阶段
+    # Discovery phase
     qa_history: str = ""
     discovery_rounds: int = 0
     audience_profile: str = ""
     market_insights: str = ""
 
-    # Planning 阶段
+    # Planning phase
     brand_creatives: str = ""
     channel_plan: str = ""
     brand_confirmed: bool = False
     channel_confirmed: bool = False
 
-    # Integration 阶段
+    # Integration phase
     integrated_strategy: str = ""
 
-    # Content 阶段
+    # Content phase
     copywriting: str = ""
 
-    # 控制
+    # Control
     current_phase: str = "discovery"
     finished: bool = False
 
-    # 内部标志
+    # Internal flags
     discovery_ready: bool = False  # [READY] detected — enough info for planning
     invalidated_phases: list = []  # phases that need regeneration due to upstream redo
 
 
 class MarketingCampaignFlow(Flow[CampaignState]):
-    """营销活动策划主流程 — 5 步 + human_feedback 暂停/恢复"""
+    """Marketing campaign main process — 5 steps + human_feedback pause/resume"""
 
     stream = True
 
-    # ─── Discovery: 市场分析师循环提问 ───────────────────────────
+    # ─── Discovery: Market analyst loop questioning ───────────────────────────
 
     @start()
     def begin(self):
-        """Flow 入口 — 初始化阶段"""
+        """Flow entry — initialization phase"""
         self.state.current_phase = "discovery"
 
     @listen(or_(begin, "continue_discovery"))
     @human_feedback(message="(user replies)", provider=PROVIDER)
     def discovery_step(self):
-        """市场分析师提一个问题或输出 [READY]"""
+        """Market analyst asks a question or outputs [READY]"""
         s = self.state
         s.discovery_rounds += 1
-        locale_instruction = "Chinese (中文)" if s.locale == "zh" else "English"
+        locale_instruction = "English"
 
         output = DiscoveryCrew().crew().kickoff(inputs={
             "campaign_brief": s.campaign_brief,
@@ -101,7 +101,7 @@ class MarketingCampaignFlow(Flow[CampaignState]):
         })
         text = _crew_text(output)
 
-        # 检测是否信息充足
+        # Check if info is sufficient
         if "[READY]" in text:
             s.discovery_ready = True
             # [READY] can appear before or after the content — take the non-empty part
@@ -116,7 +116,7 @@ class MarketingCampaignFlow(Flow[CampaignState]):
             s.audience_profile = content
             s.market_insights = content
         else:
-            # 追加到 qa_history
+            # Append to qa_history
             clean = text.split("[SUGGESTIONS]")[0].strip() if "[SUGGESTIONS]" in text else text
             s.qa_history = (s.qa_history + f"\nAnalyst: {clean}").strip()
 
@@ -124,7 +124,7 @@ class MarketingCampaignFlow(Flow[CampaignState]):
 
     @router(discovery_step)
     def after_discovery(self):
-        # Check if user explicitly wants to skip discovery (e.g., "信息够了，开始策划")
+        # Check if user explicitly wants to skip discovery (e.g., "Enough info, start planning")
         feedback = ""
         if self.last_human_feedback:
             feedback = (self.last_human_feedback.feedback or "").lower()
@@ -134,7 +134,7 @@ class MarketingCampaignFlow(Flow[CampaignState]):
                 self.state.audience_profile = self.state.qa_history
                 self.state.market_insights = self.state.qa_history
             return "planning"
-        if any(k in feedback for k in ("skip", "confirm", "action:confirm", "够了", "开始策划", "next")):
+        if any(k in feedback for k in ("skip", "confirm", "action:confirm", "next")):
             # User wants to skip — use whatever info we have
             if not self.state.audience_profile:
                 self.state.audience_profile = self.state.qa_history
@@ -142,15 +142,15 @@ class MarketingCampaignFlow(Flow[CampaignState]):
             return "planning"
         return "continue_discovery"
 
-    # ─── Planning: 品牌创意 + 渠道策划（顺序执行，流式输出）─────
+    # ─── Planning: Brand creative + Channel planning (sequential, streaming output) ─────
 
     @listen("planning")
     @human_feedback(message="(user reviews)", provider=PROVIDER)
     def planning_step(self):
-        """品牌创意 → 渠道策划（顺序执行，streaming 自动分段）"""
+        """Brand creative -> Channel planning (sequential, streaming auto-segmented)"""
         s = self.state
         s.current_phase = "planning"
-        locale_instruction = "Chinese (中文)" if s.locale == "zh" else "English"
+        locale_instruction = "English"
 
         inputs = {
             "campaign_name": s.campaign_name,
@@ -179,14 +179,14 @@ class MarketingCampaignFlow(Flow[CampaignState]):
             return "redo_channel"
         return "planning"
 
-    # ─── Redo Brand / Channel (流式，保持在 planning 阶段) ────────
+    # ─── Redo Brand / Channel (streaming, stays in planning phase) ────────
 
     @listen("redo_brand")
     @human_feedback(message="(user reviews)", provider=PROVIDER)
     def redo_brand_step(self):
-        """重做品牌创意"""
+        """Redo Brand Creative"""
         s = self.state
-        locale_instruction = "Chinese (中文)" if s.locale == "zh" else "English"
+        locale_instruction = "English"
         feedback_text = ""
         if self.last_human_feedback:
             raw = self.last_human_feedback.feedback or ""
@@ -220,9 +220,9 @@ class MarketingCampaignFlow(Flow[CampaignState]):
     @listen("redo_channel")
     @human_feedback(message="(user reviews)", provider=PROVIDER)
     def redo_channel_step(self):
-        """重做渠道策略"""
+        """Redo Channel Strategy"""
         s = self.state
-        locale_instruction = "Chinese (中文)" if s.locale == "zh" else "English"
+        locale_instruction = "English"
         feedback_text = ""
         if self.last_human_feedback:
             raw = self.last_human_feedback.feedback or ""
@@ -253,15 +253,15 @@ class MarketingCampaignFlow(Flow[CampaignState]):
             return "redo_channel"
         return "planning"
 
-    # ─── Integration: 策略整合 ───────────────────────────────────
+    # ─── Integration: Strategy integration ───────────────────────────────────
 
     @listen("integration")
     @human_feedback(message="(user reviews)", provider=PROVIDER)
     def integration_step(self):
-        """策略总监整合品牌+渠道为统一方案"""
+        """Strategy director integrates brand+channel into unified plan"""
         s = self.state
         s.current_phase = "integration"
-        locale_instruction = "Chinese (中文)" if s.locale == "zh" else "English"
+        locale_instruction = "English"
 
         result = IntegrationCrew().crew().kickoff(inputs={
             "campaign_name": s.campaign_name,
@@ -282,15 +282,15 @@ class MarketingCampaignFlow(Flow[CampaignState]):
             return "content"
         return "integration"
 
-    # ─── Content: 文案产出 ───────────────────────────────────────
+    # ─── Content: Copy production ───────────────────────────────────────
 
     @listen("content")
     @human_feedback(message="(user reviews)", provider=PROVIDER)
     def content_step(self):
-        """文案专家产出营销文案"""
+        """Copywriter produces marketing copy"""
         s = self.state
         s.current_phase = "content"
-        locale_instruction = "Chinese (中文)" if s.locale == "zh" else "English"
+        locale_instruction = "English"
 
         result = ContentCrew().crew().kickoff(inputs={
             "campaign_name": s.campaign_name,
@@ -315,7 +315,7 @@ class MarketingCampaignFlow(Flow[CampaignState]):
     @listen("finalize")
     @human_feedback(message="(user reviews final plan)", provider=PROVIDER)
     def finalize_step(self):
-        """方案定稿阶段 — Flow 暂停，等待用户生成完整方案或结束"""
+        """Finalization phase - Flow pauses awaiting user to generate full plan or finish"""
         self.state.current_phase = "finalize"
         return "All modules complete. Ready to generate full plan."
 
@@ -331,24 +331,24 @@ class MarketingCampaignFlow(Flow[CampaignState]):
     @listen("generate_document")
     @human_feedback(message="(user reviews document)", provider=PROVIDER)
     def generate_document_step(self):
-        """生成完整方案文档"""
+        """Generate full plan document"""
         s = self.state
-        locale_instruction = "Chinese (中文)" if s.locale == "zh" else "English"
+        locale_instruction = "English"
 
         # Build comprehensive input for full document generation
         full_brief = f"""You are generating a COMPLETE marketing campaign plan document.
 Below is ALL the material produced by the team. Your job is to compile it into
 ONE structured, professional marketing plan document with the following chapters:
 
-1. Executive Summary (概述)
-2. Target Audience Analysis (目标受众分析)
-3. Brand & Creative Strategy (品牌创意策略)
-4. Channel & Media Plan (渠道媒体计划)
-5. Integrated Campaign Strategy (整合营销策略)
-6. Content & Copywriting (内容文案)
-7. Timeline & Milestones (排期与里程碑)
-8. Budget Allocation (预算分配)
-9. KPIs & Success Metrics (KPI与效果评估)
+1. Executive Summary
+2. Target Audience Analysis
+3. Brand & Creative Strategy
+4. Channel & Media Plan
+5. Integrated Campaign Strategy
+6. Content & Copywriting
+7. Timeline & Milestones
+8. Budget Allocation
+9. KPIs & Success Metrics
 
 Use the material below as source. Expand where needed, add timeline and budget
 estimates based on the channel plan, and ensure the document reads as a cohesive
@@ -396,9 +396,9 @@ Campaign Name: {s.campaign_name}
     @listen("revise_document")
     @human_feedback(message="(user reviews revised document)", provider=PROVIDER)
     def revise_document_step(self):
-        """修改方案文档"""
+        """Revise plan document"""
         s = self.state
-        locale_instruction = "Chinese (中文)" if s.locale == "zh" else "English"
+        locale_instruction = "English"
 
         # Extract feedback from the human feedback
         revision_feedback = ""
@@ -430,7 +430,7 @@ Campaign Name: {s.campaign_name}
 
     @listen("done")
     def done_step(self):
-        """Flow 结束"""
+        """Flow end"""
         self.state.finished = True
         return "Done."
 
@@ -447,6 +447,6 @@ def _is_confirm(feedback: str) -> bool:
     """Check if feedback indicates confirmation."""
     lower = feedback.lower().strip()
     return any(k in lower for k in (
-        "confirm", "确认", "action:confirm",
-        "approve", "通过", "下一步", "next",
+        "confirm", "action:confirm",
+        "approve", "next", "finalize",
     ))

@@ -86,7 +86,7 @@ export default function DiscoveryView({ messages, streaming, activeAgents, onSki
         </div>
       )}
 
-      {/* 推荐回答按钮 */}
+      {/* suggested answer buttons */}
       {suggestions && suggestions.length > 0 && !streaming && !isAgentActive && onSuggestionClick && (
         <div className="flex flex-wrap gap-2 pt-2 animate-fade-in">
           {suggestions.map((s, idx) => (

@@ -31,7 +31,7 @@ export function exportCampaignMarkdown(cards: CardData, campaignName?: string): 
 
   return `# ${title}
 
-> ${t("action.finish") === "全部完成" ? "生成时间" : "Generated"}: ${now}
+> Generated: ${now}
 
 ---
 

@@ -1,4 +1,4 @@
-export type Locale = "zh" | "en"
+export type Locale = "en"
 
 export type Phase = "start" | "discovery" | "planning" | "integration" | "content" | "finalize"
 

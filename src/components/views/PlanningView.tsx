@@ -29,13 +29,13 @@ export default function PlanningView({ cards, streaming, activeAgents, onCardAct
   const brandData = cards.brand_creative as Record<string, unknown> | null
   const channelData = cards.channel_plan as Record<string, unknown> | null
 
-  // 流式输出时自动切到正在生成的 tab
+  // Auto-switch to the tab being generated during streaming
   useEffect(() => {
     if (brandLoading) setActiveTab("brand")
     else if (channelLoading) setActiveTab("channel")
   }, [brandLoading, channelLoading])
 
-  // 品牌创意完成后自动切到渠道
+  // Auto-switch to channel after brand creative completes
   useEffect(() => {
     if (!brandLoading && channelLoading) {
       setActiveTab("channel")
@@ -86,11 +86,11 @@ export default function PlanningView({ cards, streaming, activeAgents, onCardAct
   const currentRaw = getRaw(currentData, activeTab)
   const currentLoading = activeTab === "brand" ? brandLoading : channelLoading
 
-  const zh = t("action.confirm") === "确认"
+  const zh = false
 
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Sticky 头部：标题 + Tab + 导航按钮 */}
+      {/* Sticky header: title + tabs + navigation buttons */}
       <div className="sticky -top-4 z-10 bg-[var(--color-bg)] pt-4 -mx-6 px-6 mb-4">
         <div className="flex items-center justify-between pb-2">
           <h2 className="text-lg font-semibold font-[var(--font-heading)]">
@@ -102,12 +102,12 @@ export default function PlanningView({ cards, streaming, activeAgents, onCardAct
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-                {zh ? "进入策略整合" : "Next"}
+                {"Next"}
               </button>
             )}
           </div>
         </div>
-        {/* Tab 切换 */}
+        {/* Tab switching */}
         <div className="flex border-b border-[var(--color-border)]">
         <div className="flex">
           <button
@@ -138,7 +138,7 @@ export default function PlanningView({ cards, streaming, activeAgents, onCardAct
         </div>
       </div>
 
-      {/* Tab 内容 */}
+      {/* Tab content */}
       {currentPrevious ? (
         <CompareCards
           oldContent={getRaw(currentPrevious, activeTab)}
@@ -152,7 +152,7 @@ export default function PlanningView({ cards, streaming, activeAgents, onCardAct
         <div className="card animate-fade-in">
           {currentLoading && !currentRaw ? (
             <div className="flex items-center gap-2 py-8 justify-center">
-              <span className="text-sm text-[var(--color-text-muted)]">{zh ? "生成中..." : "Generating..."}</span>
+              <span className="text-sm text-[var(--color-text-muted)]">{"Generating..."}</span>
               <div className="flex gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse-dot" />
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse-dot" style={{ animationDelay: "0.3s" }} />
@@ -167,11 +167,11 @@ export default function PlanningView({ cards, streaming, activeAgents, onCardAct
             </div>
           ) : (
             <p className="text-[var(--color-text-muted)] text-sm text-center py-8">
-              {zh ? "等待生成..." : "Waiting..."}
+              {"Waiting..."}
             </p>
           )}
 
-          {/* 重做按钮（内嵌在卡片底部） */}
+          {/* Redo button (embedded at card bottom) */}
           {!isLoading && currentRaw && !currentPrevious && (
             <div className="mt-4 pt-3 border-t border-[var(--color-border)]">
               <RedobBar onRedo={handleRedo} />
@@ -183,10 +183,10 @@ export default function PlanningView({ cards, streaming, activeAgents, onCardAct
   )
 }
 
-/** 内嵌重做输入框 */
+/** Inline redo input */
 function RedobBar({ onRedo }: { onRedo: (feedback?: string) => void }) {
   const [feedback, setFeedback] = useState("")
-  const zh = t("action.confirm") === "确认"
+  const zh = false
 
   return (
     <div className="flex gap-2">
@@ -195,7 +195,7 @@ function RedobBar({ onRedo }: { onRedo: (feedback?: string) => void }) {
         value={feedback}
         onChange={(e) => setFeedback(e.target.value)}
         onKeyDown={(e) => { if (e.key === "Enter" && feedback.trim()) { onRedo(feedback.trim()); setFeedback("") } }}
-        placeholder={zh ? "给修改意见（可选）..." : "Feedback (optional)..."}
+        placeholder={"Feedback (optional)..."}
         className="flex-1 px-3 py-2 text-sm border border-[var(--color-border)] rounded-[var(--radius-sm)] outline-none focus:border-[var(--color-primary)] transition-colors"
       />
       <button

@@ -4,7 +4,7 @@ from http.server import BaseHTTPRequestHandler
 
 
 class handler(BaseHTTPRequestHandler):
-    """POST /delete — 删除会话数据（store + 内存）"""
+    """POST /delete — Delete session data (store + memory)"""
 
     def do_POST(self):
         content_length = int(self.headers.get("Content-Length", 0))

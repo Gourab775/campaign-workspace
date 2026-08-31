@@ -22,10 +22,10 @@ interview_task:
       These should be realistic, diverse options relevant to your question.
 
     The [READY] summary MUST be structured as:
-    ## 目标受众画像
+    ## Target Audience Profile
     (demographics, psychographics, behaviors)
 
-    ## 市场洞察
+    ## Market Insights
     (competitive landscape, opportunities, key insights)
 
     If information is incomplete, infer reasonable defaults from the campaign brief
@@ -36,7 +36,7 @@ interview_task:
     Either:
     A) A single focused question (1-2 sentences) followed by [SUGGESTIONS] and
        2-3 example answers (each prefixed with "- "), OR
-    B) [READY] followed by a structured summary with "## 目标受众画像" and
-       "## 市场洞察" sections.
+    B) [READY] followed by a structured summary with "## Target Audience Profile" and
+       "## Market Insights" sections.
     On round 4, ALWAYS output option B.
   agent: market_analyst

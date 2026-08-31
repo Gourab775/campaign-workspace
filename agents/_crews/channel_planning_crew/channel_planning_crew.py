@@ -7,7 +7,7 @@ from agents._lib.llm import get_llm
 
 @CrewBase
 class ChannelPlanningCrew:
-    """渠道策划 Crew — 设计渠道组合、时间线与预算分配。"""
+    """Channel Planning Crew - designs channel mix, timeline and budget allocation."""
 
     agents: list[BaseAgent]
     tasks: list[Task]

@@ -29,20 +29,20 @@ function getItems(cards: CardData): AccordionItem[] {
   const getRaw = (data: unknown): string => {
     if (!data) return ""
     const d = data as Record<string, unknown>
-    // 直接 raw 字段
+    // direct raw field
     if (typeof d.raw === "string") return d.raw
-    // content 字段（可能是 string 或 {raw: string}）
+    // content field (may be string or {raw: string})
     if (d.content) {
       if (typeof d.content === "string") return d.content
       if (typeof d.content === "object" && (d.content as Record<string, unknown>).raw) {
         return (d.content as Record<string, unknown>).raw as string
       }
     }
-    // creatives 数组
+    // creatives array
     if (Array.isArray(d.creatives) && d.creatives[0]?.raw) {
       return d.creatives[0].raw as string
     }
-    // plan 嵌套
+    // plan nested
     if (d.plan && typeof d.plan === "object") {
       return (d.plan as Record<string, unknown>).raw as string || ""
     }
@@ -83,7 +83,7 @@ export default function FinalizeView({
   const [waitingForDocument, setWaitingForDocument] = useState(false)
   const items = getItems(cards)
   const isGenerating = activeAgents.some((a) => a.agent === "chief_strategist")
-  const zh = t("action.confirm") === "确认"
+  const zh = false
 
   // Clear waitingForDocument once content starts arriving or streaming ends
   if (waitingForDocument && (finalDocument || (!streaming && !isGenerating))) {
@@ -98,7 +98,7 @@ export default function FinalizeView({
   }, [feedback, onEditDocument])
 
   // ═══════════════════════════════════════════════════════════
-  // 方案调整阶段：完整方案文档 + 右侧目录 + 修改输入
+  // Plan refinement stage: full document + sidebar TOC + edit input
   // ═══════════════════════════════════════════════════════════
   if (finalDocument || isGenerating || waitingForDocument) {
     const headings = extractHeadings(finalDocument)
@@ -108,10 +108,10 @@ export default function FinalizeView({
         <div className="sticky -top-4 z-10 bg-[var(--color-bg)] pt-4 pb-2 -mx-6 px-6 flex items-center justify-between mb-4 border-b border-[var(--color-border)]">
           <div>
             <h2 className="text-lg font-semibold font-[var(--font-heading)]">
-              {zh ? "方案调整" : "Plan Refinement"}
+              {"Plan Refinement"}
             </h2>
             <p className="text-xs text-[var(--color-text-muted)]">
-              {zh ? "基于完整方案进行修改" : "Edit the final plan document"}
+              {"Edit the final plan document"}
             </p>
           </div>
           <div className="flex gap-2">
@@ -119,19 +119,19 @@ export default function FinalizeView({
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
               </svg>
-              {zh ? "返回方案总览" : "Back to overview"}
+              {"Back to overview"}
             </button>
             <button onClick={onExportDocument} disabled={streaming} className="btn btn-primary cursor-pointer text-xs disabled:opacity-40 disabled:cursor-not-allowed">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              {zh ? "导出完整方案" : "Export Plan"}
+              {"Export Plan"}
             </button>
           </div>
         </div>
 
         <div className="flex gap-6">
-          {/* 左侧：文档内容 */}
+          {/* Left: document content */}
           <div className="flex-1 min-w-0">
             <div className="card overflow-hidden">
               <div className="card-content text-sm overflow-x-auto">
@@ -163,21 +163,21 @@ export default function FinalizeView({
                       <span className="w-2 h-2 rounded-full bg-[var(--color-primary)] animate-pulse-dot" style={{ animationDelay: "0.4s" }} />
                     </div>
                     <p className="text-sm text-[var(--color-text-muted)]">
-                      {zh ? "\u6b63\u5728\u751f\u6210\u65b9\u6848..." : "Generating plan..."}
+                      {"Generating plan..."}
                     </p>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* 修改输入 */}
+            {/* Edit input */}
             <div className="mt-4 flex gap-2">
               <input
                 type="text"
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleEditSubmit()}
-                placeholder={zh ? "对方案提出修改意见..." : "Suggest changes..."}
+                placeholder={"Suggest changes..."}
                 disabled={streaming}
                 className="flex-1 px-4 py-3 border border-[var(--color-border)] rounded-[var(--radius-sm)] text-sm outline-none focus:border-[var(--color-primary)] transition-colors"
               />
@@ -191,17 +191,17 @@ export default function FinalizeView({
                     <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse-dot" />
                     <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse-dot" style={{ animationDelay: "0.3s" }} />
                   </div>
-                ) : (zh ? "修改" : "Revise")}
+                ) : ("Revise")}
               </button>
             </div>
           </div>
 
-          {/* 右侧：目录导航（始终占位保持宽度一致） */}
+          {/* Right: TOC navigation (always reserved width) */}
           <nav className="hidden lg:block w-48 flex-shrink-0">
             {headings.length > 0 && (
               <div className="sticky top-16">
                 <p className="text-xs font-semibold text-[var(--color-text-muted)] uppercase mb-2">
-                  {zh ? "目录" : "Contents"}
+                  {"Contents"}
                 </p>
                 <ul className="space-y-1 text-xs">
                   {headings.map((h, idx) => (
@@ -228,17 +228,17 @@ export default function FinalizeView({
   }
 
   // ═══════════════════════════════════════════════════════════
-  // 方案总览阶段：手风琴查看各模块 + 操作按钮
+  // Plan overview stage: accordion view of modules + action buttons
   // ═══════════════════════════════════════════════════════════
   return (
     <div className="max-w-3xl mx-auto">
       <div className="sticky -top-4 z-10 bg-[var(--color-bg)] pt-4 pb-2 -mx-6 px-6 flex items-center justify-between mb-4 border-b border-[var(--color-border)]">
         <div>
           <h2 className="text-lg font-semibold font-[var(--font-heading)]">
-            {zh ? "方案总览" : "Plan Overview"}
+            {"Plan Overview"}
           </h2>
           <p className="text-xs text-[var(--color-text-muted)]">
-            {zh ? "确认各模块内容后生成完整方案" : "Review modules, then generate full plan"}
+            {"Review modules, then generate full plan"}
           </p>
         </div>
         <div className="flex gap-2">
@@ -246,13 +246,13 @@ export default function FinalizeView({
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
             </svg>
-            {zh ? "返回修改" : "Go back"}
+            {"Go back"}
           </button>
           <button onClick={onExportCards} className="btn btn-outline cursor-pointer text-xs">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            {zh ? "导出" : "Export"}
+            {"Export"}
           </button>
           <button
             onClick={() => { setWaitingForDocument(true); onGenerateDocument() }}
@@ -262,7 +262,7 @@ export default function FinalizeView({
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-            {zh ? "生成完整方案" : "Generate Plan"}
+            {"Generate Plan"}
           </button>
         </div>
       </div>
@@ -306,7 +306,7 @@ export default function FinalizeView({
       {isGenerating && (
         <div className="mt-4 card animate-fade-in">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-[var(--color-text-muted)]">{zh ? "策略总监正在整合生成完整方案..." : "Generating full plan..."}</span>
+            <span className="text-sm text-[var(--color-text-muted)]">{"Generating full plan..."}</span>
             <div className="flex gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse-dot" />
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse-dot" style={{ animationDelay: "0.3s" }} />

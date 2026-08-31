@@ -4,6 +4,9 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  css: {
+    postcss: {},
+  },
   server: {
     proxy: {
       '/stream': 'http://localhost:9000',

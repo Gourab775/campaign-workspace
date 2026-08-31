@@ -7,7 +7,7 @@ from agents._lib.llm import get_llm
 
 @CrewBase
 class ContentCrew:
-    """内容产出 Crew — 文案专家生成营销文案。"""
+    """Content Crew - copywriter generates marketing copy."""
 
     agents: list[BaseAgent]
     tasks: list[Task]

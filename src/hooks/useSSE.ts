@@ -49,7 +49,7 @@ export function useSSE(dispatch: React.Dispatch<AppAction>) {
         ...options,
       }
 
-      // 线上 Makers 平台需要 makers-conversation-id header
+      // Makers platform requires makers-conversation-id header
       const convId = conversationIdRef.current || crypto.randomUUID()
       if (!conversationIdRef.current) {
         conversationIdRef.current = convId
@@ -114,8 +114,8 @@ export function useSSE(dispatch: React.Dispatch<AppAction>) {
       if (err instanceof Error && err.name === "AbortError") return
       dispatch({ type: "ERROR", message: err instanceof Error ? err.message : "Unknown error" })
     } finally {
-      // 只有当前 controller 仍是活跃的才 dispatch STREAMING_END
-      // （如果被新请求 abort 了，abortRef 已经指向新 controller）
+      // Only dispatch STREAMING_END if this controller is still active
+      // (if aborted by a new request, abortRef already points to new controller)
       if (abortRef.current === controller) {
         dispatch({ type: "STREAMING_END" })
         abortRef.current = null
@@ -128,7 +128,7 @@ export function useSSE(dispatch: React.Dispatch<AppAction>) {
     if (!cid) return
 
     try {
-      // 优先调用 cloud-function /history（独立于 agent 进程）
+      // Prefer cloud-function /history (independent of agent process)
       let response = await fetch("/history", {
         method: "POST",
         headers: {
@@ -138,7 +138,7 @@ export function useSSE(dispatch: React.Dispatch<AppAction>) {
         body: JSON.stringify({ conversation_id: cid }),
       })
 
-      // 如果 /history 不可用（404），回退到 agent /stream
+      // If /history not available (404), fallback to agent /stream
       if (!response.ok) {
         response = await fetch("/stream", {
           method: "POST",
@@ -172,11 +172,11 @@ export function useSSE(dispatch: React.Dispatch<AppAction>) {
             }),
           },
         })
-      } else {
-        dispatch({ type: "STATUS", message: "会话已过期，请新建" })
+        } else {
+        dispatch({ type: "STATUS", message: "Session expired, please create a new one" })
       }
     } catch {
-      dispatch({ type: "STATUS", message: "加载失败" })
+      dispatch({ type: "STATUS", message: "Failed to load" })
     }
   }, [dispatch])
 

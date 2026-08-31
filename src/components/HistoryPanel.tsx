@@ -12,7 +12,7 @@ interface HistoryPanelProps {
 
 function formatTime(ts: number): string {
   const diff = Date.now() - ts
-  if (diff < 60_000) return t("app.history") === "历史" ? "刚刚" : "Just now"
+  if (diff < 60_000) return "Just now"
   if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`
   if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`
   return new Date(ts).toLocaleDateString()
@@ -21,7 +21,7 @@ function formatTime(ts: number): string {
 export default function HistoryPanel({ open, onClose, onSelect, currentId }: HistoryPanelProps) {
   const [items, setItems] = useState<HistoryItem[]>(getHistory)
 
-  // 每次打开时刷新列表
+  // Refresh list each time panel opens
   useEffect(() => {
     if (open) setItems(getHistory())
   }, [open])
@@ -30,7 +30,7 @@ export default function HistoryPanel({ open, onClose, onSelect, currentId }: His
     e.stopPropagation()
     removeHistory(id)
     setItems(getHistory())
-    // 同时删除服务端数据
+    // Also delete server-side data
     fetch("/delete", {
       method: "POST",
       headers: { "Content-Type": "application/json", "makers-conversation-id": id },
@@ -64,7 +64,7 @@ export default function HistoryPanel({ open, onClose, onSelect, currentId }: His
         <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (
             <p className="text-sm text-[var(--color-text-muted)] text-center py-8">
-              {t("app.history") === "历史" ? "暂无历史会话" : "No history yet"}
+              No history yet
             </p>
           ) : (
             <div className="divide-y divide-[var(--color-border)]">

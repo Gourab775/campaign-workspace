@@ -3,11 +3,11 @@
   "outputDirectory": "dist",
   "agents": {
     "framework": "workflow",
-    "dir": "services"
+    "dir": "agents"
   },
   "services": {
     "framework": "workflow",
-    "dir": "services"
+    "dir": "agents"
   },
   "cloudFunctions": {
     "nodejs": {

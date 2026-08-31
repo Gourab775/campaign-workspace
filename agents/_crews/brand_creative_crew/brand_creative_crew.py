@@ -7,7 +7,7 @@ from agents._lib.llm import get_llm
 
 @CrewBase
 class BrandCreativeCrew:
-    """品牌创意 Crew — 产出 2-3 套创意方案。"""
+    """Brand Creative Crew - produces 2-3 creative proposals."""
 
     agents: list[BaseAgent]
     tasks: list[Task]

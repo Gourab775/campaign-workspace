@@ -16,7 +16,7 @@ interface CopywritingCardProps {
 }
 
 export default function CopywritingCard({ data, loading, actions, showFeedback }: CopywritingCardProps) {
-  // data 可能是 {raw: "..."} 或 {content: {raw: "..."}} 或 {content: {headline, body, cta}}
+  // data may be {raw: "..."} or {content: {raw: "..."}} or {content: {headline, body, cta}}
   const raw = (data as Record<string, unknown>)?.raw as string | undefined
     || ((data?.content as Record<string, unknown>)?.raw as string | undefined)
 

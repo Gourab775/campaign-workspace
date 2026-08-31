@@ -7,9 +7,9 @@ from agents._lib.llm import get_llm
 
 @CrewBase
 class DiscoveryCrew:
-    """市场调研 Crew — 市场分析师向用户提问收集信息。
+    """Market Research Crew - market analyst asks users to collect information.
 
-    单 Agent Crew：PM 每轮决定继续提问还是输出 [READY] 进入下一阶段。
+    Single Agent Crew: PM decides each round to continue questioning or output [READY] to enter next phase.
     """
 
     agents: list[BaseAgent]

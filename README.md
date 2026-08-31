@@ -1,4 +1,4 @@
-﻿# Marketing Campaign Planner
+# Marketing Campaign Planner
 
 Live Demo: https://campaign-workspace-gourab-neogi.vercel.app
 

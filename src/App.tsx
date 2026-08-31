@@ -78,17 +78,17 @@ function reducer(state: AppState, action: AppAction): AppState {
     case "CHUNK": {
       const content = action.content
 
-      // discovery 阶段不处理流式 chunk
+      // do not handle streaming chunks in discovery phase
       if (state.phase === "discovery") {
         return state
       }
 
-      // finalize 阶段：chief_strategist 的 chunk 写入 finalDocument
+      // finalize phase: chief_strategist chunks write to finalDocument
       if (state.phase === "finalize" && action.agent === "chief_strategist") {
         return { ...state, finalDocument: state.finalDocument + content }
       }
 
-      // 追加到 messages
+      // append to messages
       const lastMsg = state.messages[state.messages.length - 1]
       let newMessages = state.messages
       if (lastMsg && lastMsg.role === action.agent && lastMsg.phase === state.phase) {
@@ -98,7 +98,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         newMessages = [...state.messages, { role: action.agent, content, phase: state.phase }]
       }
 
-      // 同时更新 cards 数据（让卡片组件流式渲染）
+      // also update cards data (enable streaming render for card components)
       let newCards = state.cards
       const agentCardMap: Record<string, string> = {
         brand_creative_director: "brand_creative",
@@ -110,7 +110,7 @@ function reducer(state: AppState, action: AppAction): AppState {
       if (cardKey) {
         const existing = (state.cards[cardKey as keyof typeof state.cards] as Record<string, unknown>) || {}
         let newRaw = ((existing.raw as string) || "") + content
-        // 清理累积内容中的完整 HTML 标签（解决标签被分割到多个 chunk 的问题）
+        // clean complete HTML tags from accumulated content (fix tags split across multiple chunks)
         newRaw = newRaw.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "")
         newCards = { ...state.cards, [cardKey]: { raw: newRaw } }
       }
@@ -133,7 +133,7 @@ function reducer(state: AppState, action: AppAction): AppState {
       }
 
     case "CARD_UPDATE": {
-      // 递归清理 data 中所有字符串的 HTML 标签
+      // recursively clean HTML tags from all strings in data
       const cleanHtml = (obj: unknown): unknown => {
         if (typeof obj === "string") {
           return obj.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "")
@@ -211,7 +211,7 @@ export default function App() {
 
   const [campaignNameRef, setCampaignNameRef] = useState("")
 
-  // 在获得 conversationId 后保存历史
+  // save history after obtaining conversationId
   useEffect(() => {
     if (state.conversationId && campaignNameRef && state.phase !== "start") {
       saveHistory(state.conversationId, campaignNameRef, state.phase)
@@ -241,7 +241,7 @@ export default function App() {
   }, [send, state.phase, state.locale])
 
   const handleCardAction = useCallback((target: "brand" | "channel", type: "confirm" | "redo" | "keep_old", options?: { selected_index?: number; feedback?: string; previous_data?: Record<string, unknown> }) => {
-    // redo 时清空对应卡片，让流式从空开始
+    // clear corresponding card on redo, start streaming from empty
     if (type === "redo") {
       const cardKey = target === "brand" ? "brand_creative" : "channel_plan"
       dispatch({ type: "CLEAR_CARD", card: cardKey })
@@ -253,7 +253,7 @@ export default function App() {
   }, [send, state.locale])
 
   const handlePhaseAction = useCallback((type: "confirm" | "redo" | "rollback" | "keep_old", feedback?: string) => {
-    // redo 时清空对应卡片
+    // clear corresponding card on redo
     if (type === "redo") {
       if (state.phase === "integration") {
         dispatch({ type: "CLEAR_CARD", card: "strategy" })
@@ -261,7 +261,7 @@ export default function App() {
         dispatch({ type: "CLEAR_CARD", card: "copywriting" })
       }
     }
-    // keep_old 时恢复前端卡片显示
+    // restore frontend card display on keep_old
     if (type === "keep_old" && feedback) {
       if (state.phase === "integration") {
         dispatch({ type: "CARD_UPDATE", card: "strategy", data: { raw: feedback } })
@@ -390,7 +390,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 全局 streaming 指示条 */}
+      {/* global streaming indicator bar */}
       {state.streaming && (
         <div className="h-0.5 bg-[var(--color-primary)]/20 overflow-hidden">
           <div className="h-full bg-[var(--color-primary)] animate-[progress_2s_ease-in-out_infinite] w-1/3" />
@@ -402,7 +402,7 @@ export default function App() {
       </main>
 
       {state.phase !== "start" && (state.statusMessage || state.streaming) && (
-        <StatusBar message={state.statusMessage || (state.streaming ? (t("status.generating") || "处理中...") : "")} />
+        <StatusBar message={state.statusMessage || (state.streaming ? (t("status.generating") || "Processing...") : "")} />
       )}
 
       {showInputBar && (
